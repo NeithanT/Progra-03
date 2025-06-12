@@ -2,7 +2,9 @@
 
 """
 
-from tkinter import *
+from tkinter import Tk, Canvas, Button, PhotoImage
+
+
 
 # create window
 def showMenu():
@@ -11,77 +13,119 @@ def showMenu():
         crea la interfaz y le muestra el menu al
         usuario
     """
+    
+        
+    def on_blackjack_click(event):
+        """
+            Maneja la funcion para el boton de blackjack
+        """
+        
+        print("blackjack!")
+        # Agregar el resto de funcionalidad
+
+
+    def on_houndsandrabbits_click(event):
+        """
+            Maneja la funcion para el boton de 
+            hounds and rabbits
+        """
+        
+        print("hounds and rabbit!")
+
+        # Agregar el resto de funcionalidad
+
+
+    def on_exit_click(event):
+        """
+            Maneja la funcion para el boton de salida
+        """
+        
+        app.quit() 
 
     app = Tk()
-    #app.configure(bg="lightblue")
-
-    #app.wm_attributes('-transparentcolor','grey')
-    app.overrideredirect(True)
-
-    #app.title("Progra03")
+        
     app.geometry("1280x720")
+    app.configure(bg = "#88E4F8")
 
-    def readjust(e):
-        app.geometry(f'+{e.x_root}+{e.y_root}')
 
-    
+    menu_canvas = Canvas(
+        app,
+        bg = "lightblue",
+        height = 720,
+        width = 1280,
+        bd = 0,
+        highlightthickness= 0,
+        relief = "ridge"
 
-    black_jack_image = PhotoImage(file = 'designs/blackjack.png')
-    black_jack_label = Label(app,border=0,bg='lightblue',image= black_jack_image)
-    black_jack_label.pack(fill=BOTH,expand=True)
-    black_jack_label.bind('<B1-Motion>',readjust)
-    #black_jack_button = Button(app,bg="lightblue",
-    #                              image=black_jack_image,
-    #                              borderwidth=0)
-    
-    exit_button = Button(app,command=app.quit,width=10,height=5)
-    exit_button.place(x=100,y=400)
+    )
 
-    """black_jack_button = tk.Button(text="prueba",
-                                  font=("Arial",12),bg="black",
-                                  fg="white",borderwidth=0,
-                                  compound=tk.CENTER,
-                                  image=black_jack_image,
-                                  width=35,
-                                  height=35)"""
-    #black_jack_button.place(x=10,y=10)
-    
+    menu_canvas.place(x = 0, y = 0)
+    menu_canvas.create_rectangle(
+        0.0,
+        0.0,
+        1280.0,
+        70.0,
+        fill = "#67CDF2",
+        outline=""
+    )
+
+    houndsandrabbits_image = PhotoImage(
+        file = "designs/houndsandrabbit.png"
+    )
+    blackjack_image = PhotoImage(
+        file = "designs/blackjack.png"
+    )
+    exit_image = PhotoImage(
+        file = "designs/exit.png"
+    )
+
+    houndsandrabbits = menu_canvas.create_image(
+        360.0, 340.0,
+        image = houndsandrabbits_image
+    )
+
+    blackjack = menu_canvas.create_image(
+        920.0, 350.0,
+        image = blackjack_image
+    )
+
+    exit = menu_canvas.create_image(
+        155.0, 575.0,
+        image = exit_image
+    )
+
+    menu_canvas.tag_bind(blackjack, "<Button-1>", on_blackjack_click)
+
+    menu_canvas.tag_bind(houndsandrabbits, "<Button-1>", on_houndsandrabbits_click)
+
+    menu_canvas.tag_bind(exit, "<Button-1>", on_exit_click)
+
+    menu_canvas.create_text(
+    280.0, 80.0,
+    anchor="nw",
+    text="Sabuesos \ny la liebre",
+    fill="#000000",
+    font=("Kurale Regular", 36 * -1)
+    )
+
+
+    menu_canvas.create_text(
+        896.0, 103.0,
+        anchor="nw",
+        text="21",
+        fill="#000000",
+        font=("Kurale Regular", 48 * -1)
+    )
+
+
+    menu_canvas.create_text(
+        450.0, -20.0,
+        anchor="nw",
+        text="Minijuegos",
+        fill="#000000",
+        font=("InknutAntiqua Regular", 64 * -1)
+    )
+
+    app.resizable(False, False)
+
     app.mainloop()
-
-
-def whenClicked():
-    print("boton clickeado")
-
-def button(root):
-
-    # Botones 
-
-    def config():
-        button.configure(bg="pink",fg="red")
-    """
-        bg = color del fondo
-        fg = color del texto
-        command = funcion que llama, config para hacerlo dinamico
-    """
-    button = Button(root, text="Click Me", command=whenClicked)
-
-    #button.grid(row=0,column=0,padx=10,pady=10) # Or .grid(), or .place() to display it
-
-    button.pack() # Or .grid(), or .place() to display it
-
-def text(root):
-
-    label = Label(root, text="Hello, Tkinter!")
-    label.pack() # Or .grid(), or .place() to display it
-
-def text_input(root):
-
-    # Entrada de texto 
-    entry = Entry(root)
-    entry.pack()
-
-def text_area(root):
-
-
-    text_area = Text(root, height=5, width=30)
-    text_area.pack()
