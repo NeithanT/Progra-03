@@ -2,8 +2,7 @@
 
 """
 
-import tkinter as tk
-from tkinter import ttk
+from tkinter import *
 
 # create window
 def showMenu():
@@ -13,34 +12,40 @@ def showMenu():
         usuario
     """
 
-    app = tk.Tk()
-    app.title("Progra03")
-    app.geometry("700x700")
+    app = Tk()
+    #app.configure(bg="lightblue")
 
-    #text_area = tk.Text(root, height=5, width=30)
-    #text_area.pack()
+    #app.wm_attributes('-transparentcolor','grey')
+    app.overrideredirect(True)
 
-    frm = ttk.Frame(app, padding=10)
-    frm.grid()
+    #app.title("Progra03")
+    app.geometry("1280x720")
+
+    def readjust(e):
+        app.geometry(f'+{e.x_root}+{e.y_root}')
+
     
-    #ttk.Label(frm, text="Hello World!").grid(column=0, row=0)
-    ttk.Button(frm, text="prueba", command=whenClicked).grid(column=1, row=0)
 
-    #for x in range(3):
-    #    for y in range(3):
-    #        ttk.Label(frm, text="Hello World!").grid(column=x, row=y)
-
-    """
-    frame = tk.Frame(root, borderwidth=2, relief="groove")
-    frame.pack()
-
-    entry_name = tk.Entry(root)
-    entry_name.grid(row=1, column=1)
-    label_name = tk.Label(root, text="Name:")
-    label_name.grid(row=2, column=2)
+    black_jack_image = PhotoImage(file = 'designs/blackjack.png')
+    black_jack_label = Label(app,border=0,bg='lightblue',image= black_jack_image)
+    black_jack_label.pack(fill=BOTH,expand=True)
+    black_jack_label.bind('<B1-Motion>',readjust)
+    #black_jack_button = Button(app,bg="lightblue",
+    #                              image=black_jack_image,
+    #                              borderwidth=0)
     
-    """
+    exit_button = Button(app,command=app.quit,width=10,height=5)
+    exit_button.place(x=100,y=400)
 
+    """black_jack_button = tk.Button(text="prueba",
+                                  font=("Arial",12),bg="black",
+                                  fg="white",borderwidth=0,
+                                  compound=tk.CENTER,
+                                  image=black_jack_image,
+                                  width=35,
+                                  height=35)"""
+    #black_jack_button.place(x=10,y=10)
+    
     app.mainloop()
 
 
@@ -49,17 +54,34 @@ def whenClicked():
 
 def button(root):
 
-     # Botones 
-    button = tk.Button(root, text="Click Me", command=whenClicked)
+    # Botones 
+
+    def config():
+        button.configure(bg="pink",fg="red")
+    """
+        bg = color del fondo
+        fg = color del texto
+        command = funcion que llama, config para hacerlo dinamico
+    """
+    button = Button(root, text="Click Me", command=whenClicked)
+
+    #button.grid(row=0,column=0,padx=10,pady=10) # Or .grid(), or .place() to display it
+
     button.pack() # Or .grid(), or .place() to display it
 
 def text(root):
 
-    label = tk.Label(root, text="Hello, Tkinter!")
+    label = Label(root, text="Hello, Tkinter!")
     label.pack() # Or .grid(), or .place() to display it
 
 def text_input(root):
 
     # Entrada de texto 
-    entry = tk.Entry(root)
+    entry = Entry(root)
     entry.pack()
+
+def text_area(root):
+
+
+    text_area = Text(root, height=5, width=30)
+    text_area.pack()
