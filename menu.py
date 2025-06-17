@@ -24,7 +24,7 @@ def showMenu():
         # Agregar el resto de funcionalidad
 
 
-    def on_houndsandrabbits_click(event):
+    def on_anarquistandfacist_click(event):
         """
             Maneja la funcion para el boton de 
             hounds and rabbits
@@ -60,16 +60,17 @@ def showMenu():
     )
 
     menu_canvas.place(x = 0, y = 0)
+
     menu_canvas.create_rectangle(
         0.0,
         0.0,
         1280.0,
-        70.0,
+        100.0,
         fill = "#67CDF2",
         outline=""
     )
 
-    houndsandrabbits_image = PhotoImage(
+    anrquistandfacist_image = PhotoImage(
         file = "designs/houndsandrabbit.png"
     )
     blackjack_image = PhotoImage(
@@ -79,10 +80,31 @@ def showMenu():
         file = "designs/exit.png"
     )
 
-    houndsandrabbits = menu_canvas.create_image(
-        360.0, 340.0,
-        image = houndsandrabbits_image
+    # Rectangulo para el texto de anarquistas y facistas
+    menu_canvas.create_rectangle(
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        fill = "#145D77",
+        outline=""
     )
+
+    anrquistandfacist = menu_canvas.create_image(
+        360.0, 340.0,
+        image = anrquistandfacist_image
+    )
+
+
+    # Rectangulo para el texto de 21
+    """menu_canvas.create_rectangle(
+        200.0,
+        200.0,
+        100.0,
+        100.0,
+        fill = "#7FAF25",
+        outline=""
+    )"""
 
     blackjack = menu_canvas.create_image(
         920.0, 350.0,
@@ -96,14 +118,14 @@ def showMenu():
 
     menu_canvas.tag_bind(blackjack, "<Button-1>", on_blackjack_click)
 
-    menu_canvas.tag_bind(houndsandrabbits, "<Button-1>", on_houndsandrabbits_click)
+    menu_canvas.tag_bind(anrquistandfacist, "<Button-1>", on_anarquistandfacist_click)
 
     menu_canvas.tag_bind(exit, "<Button-1>", on_exit_click)
 
     menu_canvas.create_text(
-    280.0, 80.0,
+    180.0, 103.0,
     anchor="nw",
-    text="Sabuesos \ny la liebre",
+    text="Anarquistas vs Facistas",
     fill="#000000",
     font=("Kurale Regular", 36 * -1)
     )
@@ -119,9 +141,9 @@ def showMenu():
 
 
     menu_canvas.create_text(
-        450.0, -20.0,
+        450.0, -10.0,
         anchor="nw",
-        text="Minijuegos",
+        text="Mini-juegos",
         fill="#000000",
         font=("InknutAntiqua Regular", 64 * -1)
     )
