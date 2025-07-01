@@ -4,40 +4,39 @@
 
 from tkinter import Tk, Canvas, PhotoImage
 
-from anarquistasYFacistas.juego import start_game
-
+from anarquistAndFacist.game import start_game
+from gameOfCards.GUI import showBlackJack
 
 # create main application and show window
 def showMenu():
+
     """
         Main function, shows the menu
         of the application
     """
-    
         
     def on_blackjack_click(event):
         
-
         menu_canvas.destroy()
-        
+        showBlackJack(app)
         print("blackjack!")
        
     def on_anarquistandfacist_click(event):
         
         menu_canvas.destroy()
         start_game(app)
+        app.quit()
         print("anarquist and facist")
-
 
     def on_exit_click(event):
        
         app.quit() 
 
+
     app = Tk()
-        
+    app.title("Progra 03")
     app.geometry("1280x720")
     app.configure(bg = "#88E4F8")
-
 
     menu_canvas = Canvas(
         app,

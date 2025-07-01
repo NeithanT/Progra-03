@@ -24,7 +24,7 @@ def start_game(app):
     
     
     frame_image = PhotoImage(
-        file = "anarquistasYFacistas/logos/frame.png"
+        file = "anarquistAndFacist/logos/frame.png"
     )
     game_canvas.create_image(640.0 , 340.0,image = frame_image)
 
@@ -71,12 +71,6 @@ def start_game(app):
 
     for line in line_cordinates:
 
-        print("[",end="")
-
-        for x,y in line:
-            print(f"({x+40},{y+40}),")
-        print("],",end="")
-
         line = game_canvas.create_line(line[0],line[1],
                             fill="blue",width=10)
 
@@ -84,10 +78,10 @@ def start_game(app):
     list_circles = []
 
     anarquist_image = PhotoImage(
-        file = "anarquistasYFacistas/logos/anarquist.png"
+        file = "anarquistAndFacist/logos/anarquist.png"
     )
     facist_image = PhotoImage(
-        file = "anarquistasYFacistas/logos/facist.png"
+        file = "anarquistAndFacist/logos/facist.png"
     )
 
     i = 0
