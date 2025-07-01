@@ -76,11 +76,12 @@ def save_user_cards(card, user_cards):
 
 def request_card(user_cards):
     """
-    Function to request a card from the deck and add it to a hand.
+        Function to request a card from the deck and add it to a hand.
     """
     deck = choose_deck()
     card = choose_card(deck)
-    # The list is modified and returned by save_user_cards
+
+    # The list is modified
     updated_user_cards = save_user_cards(card, user_cards)
     print(updated_user_cards)
     return updated_user_cards

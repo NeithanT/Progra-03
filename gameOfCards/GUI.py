@@ -1,5 +1,5 @@
 # MAIN FUNCTION OF BLACKJACK
-from tkinter import Tk, Canvas, PhotoImage, Frame, Label
+from tkinter import Canvas, PhotoImage, Frame, Label
 
 from gameOfCards.functions import sum_cards
 from gameOfCards.computer_game import computer_round
@@ -14,7 +14,6 @@ def showBlackJack(app):
     def stand_button(event):
         """
             Function for the stand button click, triggers the computer's turn
-        
         """
         print("stand!")
         nonlocal pc_deck

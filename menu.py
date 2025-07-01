@@ -19,6 +19,7 @@ def showMenu():
         
         menu_canvas.destroy()
         showBlackJack(app)
+        app.quit()
         print("blackjack!")
        
     def on_anarquistandfacist_click(event):
