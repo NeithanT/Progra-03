@@ -1,5 +1,4 @@
 
-   
 def sum_cards(cards):
     """
     Function to sum the values of the cards in a list.
@@ -90,24 +89,92 @@ def check_points(cards_list):
 
         if total == 21 and num_sevens == 3:
             print("Triple 7")
-            points += 5
+            return 5
         if num_aces == 2 and len(cards_list) == 2:
             print("Doble As")
-            points += 4
+            return 4
         if five_of_diamonds == 1:
             print("5 de rombos")
-            points += 3
+            return 3
         if len(cards_list) == 5 and num_figures == 0:
             print("5 menores")
-            points += 2
+            return 2
         if total == 21 and num_figures >= 1 and num_aces >= 1 and len(cards_list) == 2:
             print("21 Duro (Black Jack)")
-            points += 1
+            return 1
         if total == 21:
             print("21 Suave")
-            points += 1
-        if points == 0:
+            return 1
+        else:
             print("Sin combinación especial")
+            return 0
+        
+def total_winner(cards_user,cards_pc):
+    """
+    Funcion that shows the winner of the game 
+    """  
+    # 0 - both lost
+    # 1 - pc wins
+    # 2 - user wins
+    # 3- tie
+    user_sum=sum_cards(cards_user)
+    pc_sum=sum_cards(cards_pc)
+    # Ambos se pasan de 21
+    if user_sum > 21 and pc_sum > 21:
+        print("Ambos se pasaron")
+        return 0
 
-    print(points)
-    return points    
+    # Solo el usuario se pasa
+    elif user_sum > 21:
+        print("Gana PC")
+        return 1
+
+    # Solo la PC se pasa
+    elif pc_sum > 21:
+        print("Gana Usuario")
+        return 2
+      
+    
+    if user_sum == 21 and pc_sum == 21:
+        win = total_winner(cards_user, cards_pc)
+        if win == 1:
+            return 1
+        elif win == 2:
+            return 2
+        else:
+            return 3
+
+    # Si alguno tiene 21 exacto
+    elif user_sum == 21:
+        return 2
+    elif pc_sum == 21:
+        return 1
+
+    # Ninguno se pasa, gana el que más se acerque a 21
+    elif user_sum > pc_sum:
+        return 2
+    elif pc_sum > user_sum:
+        return 1
+
+    #This doesnt make sense but ñe
+    else:
+        return 3
+    
+    
+def winner(cards_user, cards_pc):
+    """
+    Function to decide the winner based on Blackjack rules.
+    """
+    user_points = check_points(cards_user)
+    pc_points = check_points(cards_pc)
+
+    if pc_points > user_points:
+        print("La computadora tiene mas puntos y es el gandaor")
+        return 1
+    elif user_points > pc_points:
+        print("El usuario tiene mas puntos y es el gandaor")
+        return 2
+    
+    elif pc_points == user_points:
+        print("Tienen el mismo 21 es un empate")
+        return 3

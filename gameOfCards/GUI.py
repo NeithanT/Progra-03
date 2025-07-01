@@ -1,7 +1,7 @@
 # MAIN FUNCTION OF BLACKJACK
 from tkinter import Canvas, PhotoImage, Frame, Label
 
-from gameOfCards.functions import sum_cards
+from gameOfCards.functions import sum_cards, total_winner
 from gameOfCards.computer_game import computer_round
 from gameOfCards.user_game import request_card
 
@@ -13,9 +13,26 @@ def showBlackJack(app):
 
     def stand_button(event):
         """
-            Function for the stand button click, triggers the computer's turn
+            Button to finish the round
         """
-        print("stand!")
+        results=total_winner(user_deck,pc_deck)
+        if results == 1:
+            print("Gano la pc")
+            return 
+        elif results == 2:
+            print("Gano la casa")
+            
+        elif results == 3:
+            print("Es un empate")
+            
+        else:
+            print("Ambos perdieron")
+            
+    def action_pc():
+        """
+        funcion para activar el turno de la pc solo una vez
+        """
+
         nonlocal pc_deck
         nonlocal pc_card_render_index
         nonlocal saved_images_pc
@@ -26,6 +43,7 @@ def showBlackJack(app):
         pc_deck = final_pc_hand
         
         pc_sum = sum_cards(final_pc_hand)
+        pc_sum_real = sum_cards(final_pc_hand)
         print(f"Computer sum: {pc_sum}")
 
         # Update the sum label for the PC, with config instead of creating a new one
@@ -34,25 +52,22 @@ def showBlackJack(app):
         # Display the computer cards
         container = gui_elements["container_2"]
         image_path = gui_elements["image_path"]
-        
-        
-        # Reset to base state
-        pc_card_render_index = 0
-        # This is the equivalent to saying = []
-        saved_images_pc = []
 
-        for card_name in final_pc_hand:
+        
+        pc_card_index=pc_card_render_index
+        if pc_card_index < len(final_pc_hand):
             # Could be reduced to one line
-            full_path = image_path + card_name + ".png"
+            img_name_pc = pc_deck[pc_card_index]
+            full_path = image_path +img_name_pc + ".png"
             img = PhotoImage(file=full_path)
             saved_images_pc += [img] # Save reference to avoid garbage collection ...
 
-            x_pos = 10 + pc_card_render_index * (img.width() + 10)
+            x_pos = 10 + pc_card_index  * (img.width() + 10)
             label = Label(container, image=img, bg="#0B6623")
             label.place(x=x_pos, y=90)
             
             pc_card_render_index += 1
-
+            
     def request_button(event):
         """
         Handles the request button click, deals a card to the player
@@ -87,6 +102,7 @@ def showBlackJack(app):
             label.place(x=x_pos, y=90)
 
             user_card_render_index += 1
+        action_pc()
 
     def tutorial_button(event):
         """
@@ -160,7 +176,7 @@ def showBlackJack(app):
         "image_path": "gameOfCards/cards_img/",
         "btn_path": "gameOfCard/btn_img/"
     }
-
+    print(gui_elements)
     # Binding events
     
     main_canvas.tag_bind(stand_btn, "<Button-1>", stand_button)
