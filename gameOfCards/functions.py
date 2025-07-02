@@ -1,45 +1,43 @@
 
 def sum_cards(cards):
+    """_summary_
+
+    Args:
+        cards (_type_): _description_
+
+    Returns:
+        _type_: _description_
     """
-    Function to sum the values of the cards in a list.
-    """
-    if cards == []:
-        return 0
-    
     total = 0
+    ace_count = 0
     i = 0
-    has_ace = False  
 
-    while i <= len(cards) - 1:
-        if (cards[i] == 'JH' or cards[i] == 'JD' or 
-            cards[i] == 'JC' or cards[i] == 'JS'):
+    while i < len(cards):
+        card = cards[i]
+        # Jacks
+        if (card == 'JH' or card == 'JD' or card == 'JC' or card == 'JS'):
             total += 10
-
-        elif (cards[i] == 'QH' or cards[i] == 'QD' or
-              cards[i] == 'QC' or cards[i] == 'QS'):
+        # Queens
+        elif (card == 'QH' or card == 'QD' or card == 'QC' or card == 'QS'):
             total += 10
-
-        elif (cards[i] == 'KH' or cards[i] == 'KD' or 
-              cards[i] == 'KC' or cards[i] == 'KS'):
+        # Kings
+        elif (card == 'KH' or card == 'KD' or card == 'KC' or card == 'KS'):
             total += 10
-
-        elif (cards[i] == 'AH' or cards[i] == 'AD' or 
-              cards[i] == 'AC' or cards[i] == 'AS'):
+        # Aces
+        elif (card == 'AH' or card == 'AD' or card == 'AC' or card == 'AS'):
             total += 1
-            has_ace = True  
-
-        elif (cards[i] == '10H' or cards[i] == '10D' or 
-              cards[i] == '10C' or cards[i] == '10S'):
+            ace_count += 1
+        # Tens
+        elif (card == '10H' or card == '10D' or card == '10C' or card == '10S'):
             total += 10
-
         else:
-            total += int(cards[i][0])
-
+            total += int(card[0])
         i += 1
 
-    if has_ace == True and total <= 10:
+
+    if ace_count > 0 and total + 10 <= 21:
         total += 10
-    
+
     return total
 
 def check_points(cards_list):
@@ -85,7 +83,6 @@ def check_points(cards_list):
             i += 1
 
         total = sum_cards(cards_list)
-        points = 0
 
         if total == 21 and num_sevens == 3:
             print("Triple 7")
@@ -136,7 +133,7 @@ def total_winner(cards_user,cards_pc):
       
     
     if user_sum == 21 and pc_sum == 21:
-        win = total_winner(cards_user, cards_pc)
+        win = winner(cards_user, cards_pc)
         if win == 1:
             return 1
         elif win == 2:

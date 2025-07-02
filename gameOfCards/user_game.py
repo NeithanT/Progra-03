@@ -28,10 +28,7 @@ def choose_deck():
         
     deck_chose = random.randint(1, 4)
     print(f"Deck chosen: {deck_chose}")
-    
     selected_cards = cards_deck(deck_chose)
-    print(f"Selected cards: {selected_cards}")
-    
     return selected_cards
 
 def choose_card(list_cards):
