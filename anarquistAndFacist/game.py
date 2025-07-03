@@ -1,5 +1,6 @@
 from tkinter import Tk, Canvas, PhotoImage, Toplevel, messagebox
-import os
+import time
+import random
 
 def load_image(file_path):
     """
@@ -191,17 +192,70 @@ def is_valid_move(game_state, from_pos, to_pos, possible_moves):
         to_col = to_coords[1]
 
         if to_col >= from_col:
-            return True # Valid forward move for an Anarchist
+            return True # Valid 
+        
         else:
-            return False # Invalid backward/sideways move for an Anarchist
+            return False # invalid
     
-    return False # Should not be reached
+    return False # Cause why not
+
+def generate_facist_move(game_state,possible_moves):
+    """
+    """
+    # Find the fascist position
+    fascist_pos_coord = None
+    for y, row in enumerate(game_state):
+        for x, piece in enumerate(row):
+            if piece == 3:
+                fascist_pos_coord = (y, x)
+                break
+  
+  
+    
+    if not fascist_pos_coord:
+        # THis should not happend but oh well
+        return False
+    
+    fascist_board_pos = board_index_to_position(fascist_pos_coord[0], fascist_pos_coord[1])
+    
+    # Get all possible moves
+    fascist_possible_moves = possible_moves[fascist_board_pos]
+
+    # Collect all valid moves
+    valid_moves = []
+
+    for move_pos in fascist_possible_moves:
+
+        move_coords = position_to_board_index(move_pos)
+
+        if move_coords:
+            
+            
+            if game_state[move_coords[0]][move_coords[1]] == 1:
+                valid_moves += [move_coords]
+    
+    
+    if not valid_moves:
+        return False
+    
+    option = random.randint(0,len(valid_moves)-1)
+    # Randomly select one of the valid moves
+    selected_move_pos, selected_move_coords = valid_moves[option]
+    
+    fascist_pos_coord = position_to_board_index(fascist_pos_coord)
+    if fascist_pos_coord:
+        # Make the move
+        game_state[fascist_pos_coord[0]][fascist_pos_coord[1]], game_state[selected_move_coords[0]][selected_move_coords[1]] = \
+            game_state[selected_move_coords[0]][selected_move_coords[1]], game_state[fascist_pos_coord[0]][fascist_pos_coord[1]]
+        
+    return True
 
 
-def move_piece(game_canvas, game_state, from_pos, to_pos, circles_coordinates, anarquist_img, facist_img):
+def move_piece(game_canvas, game_state, from_pos, to_pos, circles_coordinates, anarquist_img, facist_img, possible_moves):
     """
         Move a piece from one position to another
     """
+
     from_coords = position_to_board_index(from_pos)
     to_coords = position_to_board_index(to_pos)
     
@@ -217,6 +271,7 @@ def move_piece(game_canvas, game_state, from_pos, to_pos, circles_coordinates, a
     
     # Redraw the board, to update
     redraw_board(game_canvas, game_state, circles_coordinates, anarquist_img, facist_img)
+    
     return True
 
 def redraw_board(game_canvas, game_state, circles_coordinates, anarquist_img, facist_img):
@@ -250,6 +305,7 @@ def redraw_board(game_canvas, game_state, circles_coordinates, anarquist_img, fa
                 game_canvas.create_image(
                     x+40, y+40, image=anarquist_img, tags="piece"
                 )
+
             elif cell == 3: 
                 
                 game_canvas.create_image(
@@ -267,48 +323,56 @@ def check_win_condition(game_state, possible_moves):
     # Find the positions of all pieces
     fascist_pos_coord = None
     anarchist_pos_coords = []
-    for r, row in enumerate(game_state):
-        for c, piece in enumerate(row):
+    for y, row in enumerate(game_state):
+        for x, piece in enumerate(row):
             if piece == 3:
-                fascist_pos_coord = (r, c)
+                fascist_pos_coord = (y, x)
             elif piece == 2:
-                anarchist_pos_coords.append((r, c))
+                anarchist_pos_coords += [(y, x)]
 
     if not fascist_pos_coord or len(anarchist_pos_coords) < 3:
-        # Should not happen in a normal game, but good for safety
+        # For safety reasons cause this should not happend
         return None 
 
-    # --- Fascist Win Condition (Escaped) ---
-    # The Fascist wins if its column is to the left of ALL anarchist columns.
+    # Check if the Facist has won
+    # The Fascist in theory has escaped if its column 
+    # is to the left of all anarchist anarquist?? whatever
+
     fascist_col = fascist_pos_coord[1]
+
     anarchists_all_to_the_right = True
+
     for anarch_coord in anarchist_pos_coords:
         if anarch_coord[1] <= fascist_col:
             anarchists_all_to_the_right = False
             break
+
     if anarchists_all_to_the_right:
         return "Fascist"
 
-    # --- Anarchist Win Condition (Trapped the Fascist) ---
-    # The Anarchists win if the Fascist has no legal moves.
+    # Check if the anarquist won
+    # the anarquist win if the fascist can not move
     fascist_board_pos = board_index_to_position(fascist_pos_coord[0], fascist_pos_coord[1])
     
-    # Get all adjacent positions for the fascist
-    fascist_possible_moves = possible_moves.get(fascist_board_pos, [])
+    # Get all posible positions for the fascist
+    fascist_possible_moves = possible_moves[fascist_board_pos]
     
     has_legal_move = False
+
     for move_pos in fascist_possible_moves:
+
         move_coords = position_to_board_index(move_pos)
+
         if move_coords:
-            # Check if any adjacent spot is empty
+            # Check if there is a red circle
             if game_state[move_coords[0]][move_coords[1]] == 1:
                 has_legal_move = True
-                break # Found a legal move, so not trapped
+                break # found a move
     
     if not has_legal_move:
         return "Anarchist"
 
-    # If no one has won yet
+    # else :
     return None
 
 
@@ -343,8 +407,10 @@ def start_anarquist_vs_facist():
     
     def click(event):
         """
-        Handle click events
+            Handle click events
+            for all pieces
         """
+
         if game_data["game_over"]:
             return
         
@@ -361,14 +427,16 @@ def start_anarquist_vs_facist():
         clicked_piece = game_data["game_state"][y][x]
         
         if game_data["selected_position"] == -1:
-            # First click - select a piece
-            if clicked_piece == 2 or clicked_piece == 3:  
+            
+            # Select a piece if none are selected
+            if clicked_piece == 2:  
                 game_data["selected_position"] = clicked_position
                 print(f"Selected piece at position {clicked_position}")
         else:
-            # Second click - attempt to move
+            # The second click, attempting to move
+
             if clicked_position == game_data["selected_position"]:
-                # Clicked same piece - deselect
+                # Clicked same piece, deselecting
                 game_data["selected_position"] = -1
                 print("Deselected piece")
             elif clicked_piece == 2 or clicked_piece == 3:
@@ -377,15 +445,16 @@ def start_anarquist_vs_facist():
                 print(f"Selected piece at position {clicked_position}")
             else:
                 # Try to move to this position
-                # Get the selected piece type
+                # Get the coords for the piece
                 selected_coords = position_to_board_index(game_data["selected_position"])
                 if selected_coords:
                     
                     if is_valid_move(game_data["game_state"], game_data["selected_position"], 
                                 clicked_position, game_data["possible_moves"]):
+                        
                         if move_piece(game_canvas, game_data["game_state"], 
                                     game_data["selected_position"], clicked_position, circles_coordinates,
-                                    anarquist_image, facist_image):
+                                    anarquist_image, facist_image, game_data["possible_moves"]):
                             print(f"Moved piece from {game_data['selected_position']} to {clicked_position}")
                             game_data["selected_position"] = -1
                             
@@ -395,6 +464,13 @@ def start_anarquist_vs_facist():
                                 game_data["winner"] = winner
                                 game_data["game_over"] = True
                                 messagebox.showinfo("Game Over", f"{winner} wins!")
+                            else: 
+                                                            
+                                # Time to calculate Facist move!!
+                                time.sleep(3)
+                                generate_facist_move(game_data["game_state"], game_data["possible_moves"])
+                                redraw_board(game_canvas, game_data["game_state"], circles_coordinates, anarquist_image, facist_image)
+
                         else:
                             print("Move failed")
                     else:
