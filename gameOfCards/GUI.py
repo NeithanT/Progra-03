@@ -5,7 +5,7 @@ from gameOfCards.computer_game import computer_round
 from gameOfCards.user_game import request_card
 import time
 
-def showBlackJack():
+def start_black_jack():
     """
     Main function of the program that creates the Blackjack interface and game logic.
 
