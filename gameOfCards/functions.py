@@ -1,19 +1,22 @@
 
 def sum_cards(cards):
-    """_summary_
-
-    Args:
-        cards (_type_): _description_
-
-    Returns:
-        _type_: _description_
     """
+    Function to calculate the total value of a list of cards.
+
+    E: cards (list): list of card strings -> ['5H', '10S', 'AD']
+    S: int: total value of the cards based on Blackjack rules
+    R: cards must be a list of strings representing valid cards
+    """
+    if not isinstance(cards, list):
+        return "Error: cards must be a list"
+
     total = 0
     ace_count = 0
     i = 0
 
     while i < len(cards):
         card = cards[i]
+        
         # Jacks
         if (card == 'JH' or card == 'JD' or card == 'JC' or card == 'JS'):
             total += 10
@@ -30,10 +33,11 @@ def sum_cards(cards):
         # Tens
         elif (card == '10H' or card == '10D' or card == '10C' or card == '10S'):
             total += 10
+        # Numbers 2–9
         else:
             total += int(card[0])
+        
         i += 1
-
 
     if ace_count > 0 and total + 10 <= 21:
         total += 10
@@ -43,7 +47,20 @@ def sum_cards(cards):
 def check_points(cards_list):
     """
     Function to check the type of points in the list.
+
+    E: cards_list (list) - list of card strings (e.g., '7H', 'AD')
+    S: int - point type according to special card combinations
+             5 -> Triple 7
+             4 -> Double Ace
+             3 -> 5 of Diamonds starts the hand
+             2 -> Five small cards without figures
+             1 -> 21 (Blackjack or soft)
+             0 -> No special combination
+    R: cards_list must be a list of card strings
     """
+    if not isinstance(cards_list, list):
+        return "Error: cards_list must be a list"
+    
     num_aces = 0
     num_figures = 0
     num_small_cards = 0
@@ -108,30 +125,42 @@ def check_points(cards_list):
         
 def total_winner(cards_user,cards_pc):
     """
-    Funcion that shows the winner of the game 
-    """  
-    # 0 - both lost
-    # 1 - pc wins
-    # 2 - user wins
-    # 3- tie
-    user_sum=sum_cards(cards_user)
-    pc_sum=sum_cards(cards_pc)
-    # Ambos se pasan de 21
+    Function that shows the winner of the game.
+
+    E: cards_user (list), cards_pc (list) - lists of card strings for each player
+    S: int - result of the game:
+             0 -> both lost
+             1 -> PC wins
+             2 -> User wins
+             3 -> tie
+    R: both cards_user and cards_pc must be lists of valid card strings
+    """
+    if not isinstance(cards_user, list):
+        return "Error: cards_user must be a list"
+    
+    if not isinstance(cards_pc, list):
+        return "Error: cards_pc must be a list"
+    
+    # Sum points
+    user_sum = sum_cards(cards_user)
+    pc_sum = sum_cards(cards_pc)
+
+    # Both went over 21
     if user_sum > 21 and pc_sum > 21:
         print("Ambos se pasaron")
         return 0
 
-    # Solo el usuario se pasa
+    # Only user went over 21
     elif user_sum > 21:
         print("Gana PC")
         return 1
 
-    # Solo la PC se pasa
+    # Only PC went over 21
     elif pc_sum > 21:
         print("Gana Usuario")
         return 2
-      
-    
+
+    # Both have exactly 21, use winner() for deeper check
     if user_sum == 21 and pc_sum == 21:
         win = winner(cards_user, cards_pc)
         if win == 1:
@@ -141,19 +170,19 @@ def total_winner(cards_user,cards_pc):
         else:
             return 3
 
-    # Si alguno tiene 21 exacto
+    # One has exactly 21
     elif user_sum == 21:
         return 2
     elif pc_sum == 21:
         return 1
 
-    # Ninguno se pasa, gana el que más se acerque a 21
+    # Closest to 21 wins
     elif user_sum > pc_sum:
         return 2
     elif pc_sum > user_sum:
         return 1
 
-    #This doesnt make sense but ñe
+    # Tie by same value (doesn't usually happen, but included)
     else:
         return 3
     
@@ -161,17 +190,29 @@ def total_winner(cards_user,cards_pc):
 def winner(cards_user, cards_pc):
     """
     Function to decide the winner based on Blackjack rules.
+
+    E: cards_user (list), cards_pc (list) - lists of card strings for user and PC
+    S: int - result of the comparison:
+             1 -> PC wins
+             2 -> User wins
+             3 -> tie
+    R: both cards_user and cards_pc must be lists of card strings
     """
+    if not isinstance(cards_user, list):
+        return "Error: cards_user must be a list"
+    
+    if not isinstance(cards_pc, list):
+        return "Error: cards_pc must be a list"
+    
     user_points = check_points(cards_user)
     pc_points = check_points(cards_pc)
 
     if pc_points > user_points:
-        print("La computadora tiene mas puntos y es el gandaor")
+        print("La computadora tiene más puntos y es el ganador")
         return 1
     elif user_points > pc_points:
-        print("El usuario tiene mas puntos y es el gandaor")
+        print("El usuario tiene más puntos y es el ganador")
         return 2
-    
-    elif pc_points == user_points:
-        print("Tienen el mismo 21 es un empate")
+    else:
+        print("Tienen el mismo 21, es un empate")
         return 3

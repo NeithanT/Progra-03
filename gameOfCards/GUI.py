@@ -1,25 +1,191 @@
 # MAIN FUNCTION OF BLACKJACK
-from tkinter import Canvas, PhotoImage, Frame, Label
+from tkinter import Canvas, PhotoImage, Frame, Label,Toplevel
 from gameOfCards.functions import sum_cards, total_winner, check_points
 from gameOfCards.computer_game import computer_round
 from gameOfCards.user_game import request_card
 import time
 
-def showBlackJack(app):
+def showBlackJack():
+    """
+    Main function of the program that creates the Blackjack interface and game logic.
 
+    E: game_window: a Tkinter Toplevel window where the game will be displayed
+    S: None: creates and renders the full Blackjack game screen and logic
+    R: game_window must be a valid Tkinter Toplevel instance
     """
-        Main function of the program that creates the interface and shows the menu
-    """
+    game_window = Toplevel()
+    game_window.title("BlackJack")
+    game_window.geometry("1280x720")
+    game_window.configure(bg = "#E9E9E9")
+    
+    def deal_initial_cards():
+        """
+        Deals two initial cards to both the PC and the user. Shows two PC
+        cards and two user cards.
+
+        E: None
+        S: This function triggers the card dealing(update of the values of the game)
+        and GUI updates for the first round
+        R: None: must be called after GUI and game state are properly initialized
+        """
+        i = 0
+        while i < 2:
+            nonlocal pc_deck
+            nonlocal pc_card_render_index
+            nonlocal saved_images_pc
+
+            # Request a card for the PC and update deck
+            final_pc_hand = request_card(pc_deck)
+            pc_deck = final_pc_hand
+
+            # Calculate sum to display only first card value
+            pc_sum = sum_cards([final_pc_hand[0]])
+            print(f"Suma Computadora: {pc_sum}")
+
+            # Update the PC sum label
+            gui_elements["label_pc_sum"].config(text=f"Contador: {pc_sum}")
+
+            container = gui_elements["container_2"]
+            image_path = gui_elements["image_path"]
+
+            pc_card_index = pc_card_render_index
+            if pc_card_index < len(final_pc_hand):
+                img_name_pc = pc_deck[pc_card_index]
+
+                # Show first card face up, second card face down
+                if pc_card_index == 0:
+                    full_path = image_path + img_name_pc + ".png"
+                else:
+                    full_path = image_path + "back1.png"
+
+                img = PhotoImage(file=full_path)
+                saved_images_pc += [img]
+
+                x_pos = 10 + pc_card_index * (img.width() + 10)
+                label = Label(container, image=img, bg="#0B6623")
+                label.place(x=x_pos, y=90)
+
+                pc_card_render_index += 1
+                container.update()
+                time.sleep(1)
+
+            # Request one card for the user
+            request_user_card()
+            i += 1
+
+        # After initial dealing, proceed to PC logic
+        request_cards_pc()
+        
+
+    def request_user_card():
+        """
+        Draws a card for the user, updates the hand, and GUI.
+
+        E: None
+        S: Modifies the user hand and renders the new card
+        R: None: must be called in the correct scope with nonlocal 
+        variables and GUI initialized
+        """
+        nonlocal user_deck
+        nonlocal user_card_render_index
+        nonlocal saved_images_user
+
+        # Request and update the user hand
+        updated_hand = request_card(user_deck)
+        user_deck = updated_hand
+
+        # Calculate the new sum and update the label
+        user_sum = sum_cards(updated_hand)
+        print(f"Suma Usuario: {user_sum}")
+        gui_elements["label_user_sum"].config(text=f"Contador: {user_sum}")
+
+        # Render the latest card on the GUI
+        user_card_index = user_card_render_index
+        if user_card_index < len(updated_hand):
+            container = gui_elements["container_1"]
+            image_path = gui_elements["image_path"]
+
+            img_name = updated_hand[user_card_index]
+            full_path = image_path + img_name + ".png"
+            img = PhotoImage(file=full_path)
+            saved_images_user += [img]
+
+            x_pos = 10 + user_card_index * (img.width() + 10)
+            label = Label(container, image=img, bg="#0B6623")
+            label.place(x=x_pos, y=90)
+
+            user_card_render_index += 1
+
+        container.update()
+        time.sleep(1)
+
+    def request_cards_pc():
+        """
+        Requests and renders the final cards for the 
+        computer after its round.
+
+        E: None
+        S: Updates the PC hand and shows the cards on screen
+        R: None: must be called in the scope where nonlocal variables and GUI exist
+        """
+        nonlocal pc_deck
+        nonlocal pc_card_render_index
+        nonlocal saved_images_pc
+
+        # Request the full hand for the computer
+        final_pc_hand = computer_round(pc_deck)
+        pc_deck = final_pc_hand
+
+        # GUI container and image path setup
+        container = gui_elements["container_2"]
+        image_path = gui_elements["image_path"]
+
+        # Reset state for re-rendering cards
+        pc_card_render_index = 0
+        saved_images_pc = []
+
+        # Render each card in PC's hand
+        for card_name in final_pc_hand:
+            if pc_card_render_index == 0:
+                full_path = image_path + card_name + ".png"
+            else:
+                full_path = image_path + "back1.png"
+            
+            img = PhotoImage(file=full_path)
+            saved_images_pc += [img]
+
+            x_pos = 10 + pc_card_render_index * (img.width() + 10)
+            label = Label(container, image=img, bg="#0B6623")
+            label.place(x=x_pos, y=90)
+
+            pc_card_render_index += 1
+            container.update()
+            time.sleep(1)
+
+        # Final message once the computer finishes its turn
+        end_message = Label(
+            game_window,
+            text="Los Fascistas se plantan. El destino está marcado, ahora responde..",
+            font=("Times New Roman", 20, "bold"),
+            bg="#555555",
+            fg="white"
+        )
+        end_message.place(relx=0.5, y=30, anchor="n")
+        game_window.after(3000, end_message.destroy)
 
     def stand_button(event):
         """
-        Button to finish the round
+        Ends the user turn, reveals all PC cards, and shows the game result.
+
+        E: event: event object from the button click
+        S: None: reveals PC hand and displays final result
+        R: None: must be called with GUI and game state already initialized
         """
         nonlocal pc_deck
         nonlocal saved_images_pc
         nonlocal saved_labels_pc  # New list to store Labels
 
-        # Destroy previous labels to reveal real card values
+        # Destroy previous card back labels to show real cards
         for label in saved_labels_pc:
             label.destroy()
 
@@ -28,7 +194,7 @@ def showBlackJack(app):
 
         for i in range(len(pc_deck)):
             pc_sum = sum_cards(pc_deck)
-            print(f"Computer sum: {pc_sum}")
+            print(f"Suma Computadora: {pc_sum}")
 
             # Update the PC's sum label
             gui_elements["label_pc_sum"].config(text=f"Contador: {pc_sum}")
@@ -47,9 +213,8 @@ def showBlackJack(app):
             label.place(x=x_pos, y=90)
 
             saved_labels_pc += [label]
-            
 
-        # Show the score table
+        # Show special points result
         pc_points = check_points(pc_deck)
         user_points = check_points(user_deck)
 
@@ -63,7 +228,7 @@ def showBlackJack(app):
         )
 
         points_label = Label(
-            app,
+            game_window,
             text=message_p,
             font=("Times New Roman", 20, "bold"),
             bg="#555555",
@@ -76,9 +241,9 @@ def showBlackJack(app):
         def remove_label():
             points_label.destroy()
 
-        app.after(2000, remove_label)
+        game_window.after(2000, remove_label)
 
-        # Show final result after 3 seconds
+        # Show the final result after 3 seconds
         def show_result():
             results = total_winner(user_deck, pc_deck)
 
@@ -91,189 +256,63 @@ def showBlackJack(app):
             else:
                 message = "¡Ambos caen! Fascistas y Anarquistas caen, devorados por su propio conflicto."
 
-
             result_label = Label(
-                app,
+                game_window,
                 text=message,
                 font=("Times New Roman", 20, "bold"),
                 bg="#555555",
-                fg="white"
+                fg="white",
+                justify="center"
             )
-            result_label.place(relx=0.5, y=30, anchor="n")
+            result_label.place(relx=0.5, rely=0.1, anchor="n")
 
-            # Remove result label after 3 seconds
-            def remove_result_label():
-                result_label.destroy()
+           
+            game_window.after(5000, result_label.destroy)
 
-            app.after(3000, remove_result_label)
-
-        app.after(3000, show_result)
-
-    def request_user_card():
-        """
-        Draws a card for the user, updates the hand, sum, and GUI.
-        """
-        nonlocal user_deck
-        nonlocal user_card_render_index
-        nonlocal saved_images_user
-
-        updated_hand = request_card(user_deck)
-        user_deck = updated_hand
-
-        user_sum = sum_cards(updated_hand)
-        print(f"User sum: {user_sum}")
-
-        gui_elements["label_user_sum"].config(text=f"Contador: {user_sum}")
-
-        user_card_index = user_card_render_index
-        if user_card_index < len(updated_hand):
-            container = gui_elements["container_1"]
-            image_path = gui_elements["image_path"]
-
-            img_name = updated_hand[user_card_index]
-            full_path = image_path + img_name + ".png"
-            img = PhotoImage(file=full_path)
-            saved_images_user += [img]
-
-            x_pos = 10 + user_card_index * (img.width() + 10)
-            label = Label(container, image=img, bg="#0B6623")
-            label.place(x=x_pos, y=90)
-
-            user_card_render_index += 1
-        container.update()
-        time.sleep(1)
-
-    def request_cards_pc():
-        nonlocal pc_deck
-        nonlocal pc_card_render_index
-        nonlocal saved_images_pc
-
-        # Pc cards, could do this on line line but we need a copy to not mess with references, cause 
-        # python is made with C and ... pointers and yeah ...
-        final_pc_hand = computer_round(pc_deck)
-        pc_deck = final_pc_hand
-
-        # Display the computer cards
-        container = gui_elements["container_2"]
-        image_path = gui_elements["image_path"]
-
-
-        # Reset to base state
-        pc_card_render_index = 0
-        # This is the equivalent to saying = []
-        saved_images_pc = []
-
-        for card_name in final_pc_hand:
-            if pc_card_render_index == 0:
-                full_path = image_path + card_name + ".png"
-            else:
-                full_path = image_path + "back1.png"
-            
-            img = PhotoImage(file=full_path)
-            saved_images_pc += [img]
-
-            x_pos = 10 + pc_card_render_index * (img.width() + 10)
-            label = Label(container, image=img, bg="#0B6623")
-            label.place(x=x_pos, y=90)
-
-            pc_card_render_index += 1
-            container.update()
-            time.sleep(1)
-        # Show final message after PC plays
-        end_message = Label(
-            app,
-            text="Los Fascistas se plantan. El destino esta marcado, ahora responde..",
-            font=("Times New Roman", 20, "bold"),
-            bg="#555555",
-            fg="white"
-        )
-        end_message.place(relx=0.5, y=30, anchor="n")
-        app.after(3000, end_message.destroy)
-
-            
-
-    def deal_initial_cards():
-        """
-        funcion para activar el turno de la pc solo una vez
-        """
-        i=0
-        while i < 2:
-            nonlocal pc_deck
-            nonlocal pc_card_render_index
-            nonlocal saved_images_pc
-
-            # Pc cards, could do this on line line but we need a copy to not mess with references, cause 
-            # python is made with C and ... pointers and yeah ...
-            final_pc_hand = request_card(pc_deck)
-            pc_deck = final_pc_hand
-            
-            pc_sum = sum_cards([final_pc_hand[0]])
-            pc_sum_real = sum_cards(final_pc_hand)
-            print(f"Computer sum: {pc_sum}")
-
-            # Update the sum label for the PC, with config instead of creating a new one
-            gui_elements["label_pc_sum"].config(text=f"Contador: {pc_sum}")
-
-            # Display the computer cards
-            container = gui_elements["container_2"]
-            image_path = gui_elements["image_path"]
-
-            
-            pc_card_index=pc_card_render_index
-            if pc_card_index < len(final_pc_hand):
-                img_name_pc = pc_deck[pc_card_index]
-                
-                if pc_card_index == 0:
-                    full_path = image_path + img_name_pc + ".png"
-                else:
-                    full_path = image_path + "back1.png"
-
-                img = PhotoImage(file=full_path)
-                saved_images_pc += [img]
-
-                x_pos = 10 + pc_card_index * (img.width() + 10)
-                label = Label(container, image=img, bg="#0B6623")
-                label.place(x=x_pos, y=90)
-
-                pc_card_render_index += 1
-                container.update()
-                time.sleep(1)
-                
-            #
-            request_user_card()
-            i+=1
-            
-        request_cards_pc()
+        game_window.after(3000, show_result)
         
-    
-
-    
+    #Start of buttons 
     def request_button(event):
         """
-        Handles the request button click, deals a card to the player
-        
+        Handles the request button click, and triggers the request_user_card
+
+        E: event: event object from the button click
+        S: None: this function triggers an action 
+        R: None: the button must be cliked
         """
         request_user_card()
         
-
     def play_button(event):
         """
-            Function for the game tutorial button
+        Function to start the game when the play button is clicked
+
+        E: event: event object from the button click
+        S: None: triggers the start of the game by dealing initial cards
+        R: None: the button must be clicked
         """
         deal_initial_cards()
 
 
-        print("Game tutorial!")
+        print("Start the Game!")
         
     def menu_button(event):
         """
-            Function for the game tutorial button
+        Function for going to the menu
+
+        E: event: event object from the button click
+        S: None: triggers the transition to the menu screen
+        R: None: the button must be clicked
         """
-        app.quit()
+        game_window.destroy()
+        game_window.quit()
         
     def restart_button(event):
         """
-        Resets all variables and GUI elements to initial game state
+        Resets all variables and GUI elements to initial game state.
+
+        E: None
+        S: None - resets internal variables and GUI components
+        R: Must be called in the correct scope where nonlocal variables exist
         """
         nonlocal user_deck
         nonlocal pc_deck
@@ -286,6 +325,7 @@ def showBlackJack(app):
         # Clear decks
         user_deck = []
         pc_deck = []
+
 
         # Reset render indices
         user_card_render_index = 0
@@ -334,7 +374,7 @@ def showBlackJack(app):
 
 
     # Create canvas
-    main_canvas = Canvas(app, bg="#777676", height=720, width=1280, bd=0, highlightthickness=0, relief="ridge")
+    main_canvas = Canvas(game_window, bg="#777676", height=720, width=1280, bd=0, highlightthickness=0, relief="ridge")
     main_canvas.place(x=0, y=0)
 
     main_canvas.create_rectangle(0.0, 0.0, 1280.0, 100.0, fill="#555555", outline="")
@@ -342,7 +382,7 @@ def showBlackJack(app):
 
     # Frame for the player 
     bg_img_a = PhotoImage(file="gameOfCards/btn_img/anarquistas.png")
-    container_1 = Frame(app, bg="#0B6623", width=540, height=380, bd=2, relief="raised")
+    container_1 = Frame(game_window, bg="#0B6623", width=540, height=380, bd=2, relief="raised")
     container_1.place(x=50, y=160)
     background_label_a = Label(container_1, image=bg_img_a)
     background_label_a.place(x=0, y=0, relwidth=1, relheight=1)
@@ -353,7 +393,7 @@ def showBlackJack(app):
     
     # Frame for the computer
     bg_img_f = PhotoImage(file="gameOfCards/btn_img/fascistas.png")
-    container_2 = Frame(app, bg="#0B6623", width=540, height=380, bd=2, relief="raised")
+    container_2 = Frame(game_window, bg="#0B6623", width=540, height=380, bd=2, relief="raised")
     container_2.place(x=690, y=160)
     background_label_f = Label(container_2, image=bg_img_f)
     background_label_f.place(x=0, y=0, relwidth=1, relheight=1)
@@ -398,5 +438,5 @@ def showBlackJack(app):
     main_canvas.tag_bind(request_btn, "<Button-1>", request_button)
     main_canvas.tag_bind(play_btn, "<Button-1>", play_button)
 
-    app.mainloop()
+    game_window.mainloop()
  
