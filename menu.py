@@ -170,7 +170,7 @@ def showMenu():
     )
 
     blackjack = menu_canvas.create_image(
-        1090.0, 480.0,
+        1100.0, 480.0,
         image=blackjack_image
     )
 

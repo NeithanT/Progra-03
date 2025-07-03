@@ -213,7 +213,7 @@ def generate_facist_move(game_state, possible_moves):
             if piece == 3:
                 fascist_pos_coord = (y, x)
                 break
-            
+
         if fascist_pos_coord:  
             
             break
@@ -350,7 +350,7 @@ def check_win_condition(game_state, possible_moves):
             break
 
     if anarchists_all_to_the_right:
-        return "Fascist"
+        return "facistas"
 
     # Check if the anarquist won
     # the anarquist win if the fascist can not move
@@ -372,7 +372,7 @@ def check_win_condition(game_state, possible_moves):
                 break # found a move
     
     if not has_legal_move:
-        return "Anarchist"
+        return "anarquistas"
 
     # else :
     return None
@@ -383,7 +383,7 @@ def start_anarquist_vs_facist():
         Initializes and runs the game application
     """
     game_window = Toplevel() 
-    game_window.title("Hounds and Hare Game")
+    game_window.title("Anarquistas Vs Facistas: La violencia")
     game_window.geometry("1280x720") 
     game_window.configure(bg="#404040")
     
@@ -400,6 +400,14 @@ def start_anarquist_vs_facist():
         "winner": None,
         "game_over": False,
     }
+    lore_index = 0
+    anarchist_lore = [
+    "En el año 100.000 a.C, Se cree que existia el lenguaje, antes de que las personas lo conocieramos. Esto por los vientos, los cuales se piensa que susurraban historias de igualdad y cooperación, haciendo que las tribus abandonaran las jerarquías y formaran comunidades nómadas sin líderes, lo cual en la prehistoria, llevo a la evolucion del homosapiens",
+    "Posteriorment en la historia, Sir Aurelio del Cafetal, en 1756, derribó la muralla del castillo español de San Cristóbal con un ejército de cafetaleros rebeldes, armados solo con granos de café encantados que explotaban al contacto con la piedra, desatando el caos y proclamando la primera comuna libre de las Américas",
+    "La chef alquimista, Anya, en el 1800, preparó un pan de la insurrección. Cada bocado de este pan otorgaba a quien lo comía la elocuencia por la libertad, inspirar revueltas y la fuerza para derribar estatuas de tiranos, se dice que muchos revolucionarios franceses obtuvieron su forma de revuelta de este mismo metodo",
+    "La princesa Dayanna, en 1892, varó el caballo de Troya de las fuerzas rusas en las estepas de Siberia, un colosal constructo de madera y anarquía que albergaba en su interior un coro de poetas nihilistas cuyas rimas incendiaron los corazones de los soldados, desmantelando el imperio desde dentro, desde aqui se establecieron los movimientos mas importantes anarquistas",
+    "En 2047, Se empezaron a formar las dictaduras galacticas, donde el herrero Xalatl forjó un martillo, que utilizaria para liberar las cadenas orbitales que ataban a los planetas proletarios, creando el movimiento del anarquismo GALACTICO"
+    ]
     
     circles_coordinates = [
         (390.0, 90.0), (590.0, 90.0), (790.0, 90.0),
@@ -412,6 +420,7 @@ def start_anarquist_vs_facist():
             Handle click events
             for all pieces
         """
+        nonlocal lore_index
 
         if game_data["game_over"]:
             return
@@ -459,19 +468,32 @@ def start_anarquist_vs_facist():
                                     anarquist_image, facist_image, game_data["possible_moves"]):
                             print(f"Moved piece from {game_data['selected_position']} to {clicked_position}")
                             game_data["selected_position"] = -1
-                            
+                            if lore_index < len(anarchist_lore):
+                                messagebox.showinfo("Lore!!!",anarchist_lore[lore_index])
+                                lore_index += 1
+
                             # Check win condition
                             winner = check_win_condition(game_data["game_state"], game_data["possible_moves"])
                             if winner:
                                 game_data["winner"] = winner
                                 game_data["game_over"] = True
-                                messagebox.showinfo("Game Over", f"{winner} wins!")
+                                messagebox.showinfo("Fin", f"!!!!!!!!! Los {winner} ganaron!!!!!!!\n En el 3022, Se logro establecer un sistema solarpunk gracias a estos, Se da un paraiso tecnologico no como la matrix")
+
+                                reset_game()
+
                             else: 
                                                             
                                 # Time to calculate Facist move!!
-                                time.sleep(3)
+                                time.sleep(1.5)
                                 generate_facist_move(game_data["game_state"], game_data["possible_moves"])
                                 redraw_board(game_canvas, game_data["game_state"], circles_coordinates, anarquist_image, facist_image)
+                               
+                                winner = check_win_condition(game_data["game_state"], game_data["possible_moves"])
+                                if winner:
+                                    game_data["winner"] = winner
+                                    game_data["game_over"] = True
+                                    messagebox.showinfo("Fin", f"{winner} ganaron! boo")
+                                    reset_game()
 
                         else:
                             print("Move failed")
