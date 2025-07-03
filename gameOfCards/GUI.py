@@ -13,6 +13,7 @@ def start_black_jack():
     S: None: creates and renders the full Blackjack game screen and logic
     R: game_window must be a valid Tkinter Toplevel instance
     """
+    
     game_window = Toplevel()
     game_window.title("BlackJack")
     game_window.geometry("1280x720")

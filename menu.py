@@ -64,7 +64,7 @@ def showMenu():
     menu_canvas.place(x=0, y=0)
 
     background_image = load_image("designs/holder.png")
-    anrquistandfacist_image = load_image("designs/houndsandrabbit.png") 
+    anrquistandfacist_image = load_image("designs/anarquist.png") 
     blackjack_image = load_image("designs/blackjack.png")
     exit_image = load_image("designs/exit.png")
     
@@ -127,6 +127,8 @@ def showMenu():
         
         
     def on_exit_click(event):
+        """
+        """
         app.quit() 
 
     background = menu_canvas.create_image(
@@ -152,14 +154,14 @@ def showMenu():
         470.0, 300.0,
         font=title_font,
         text="EL CAMPO DE\n   BATALLA",
-        fill="#A2A2A2", # Gray text
+        fill="#A2A2A2"
     )
 
     text_blackjack = menu_canvas.create_text(
         810.0, 480.0,
         font=title_font,
         text="EL MOVIMIENTO\n     SOCIAL",
-        fill="#A2A2A2",
+        fill="#A2A2A2"
     )
 
     anarquistandfacist = menu_canvas.create_image(
