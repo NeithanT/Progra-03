@@ -123,68 +123,78 @@ def check_points(cards_list):
             print("Sin combinación especial")
             return 0
         
-def total_winner(cards_user,cards_pc):
+def total_winner(cards_user, cards_pc):
     """
-    Function that shows the winner of the game.
+    Determines the winner by first comparing special points (check_points).
+    If there is a tie in special points, then compares the sums and standard Blackjack rules.
 
-    E: cards_user (list), cards_pc (list) - lists of card strings for each player
-    S: int - result of the game:
-             0 -> both lost
-             1 -> PC wins
-             2 -> User wins
-             3 -> tie
-    R: both cards_user and cards_pc must be lists of valid card strings
+    Returns:
+    0 -> both lost (busted)
+    1 -> PC wins
+    2 -> User wins
+    3 -> tie
     """
     if not isinstance(cards_user, list):
         return "Error: cards_user must be a list"
-    
     if not isinstance(cards_pc, list):
         return "Error: cards_pc must be a list"
-    
-    # Sum points
-    user_sum = sum_cards(cards_user)
-    pc_sum = sum_cards(cards_pc)
 
-    # Both went over 21
-    if user_sum > 21 and pc_sum > 21:
-        print("Ambos se pasaron")
-        return 0
+    # Get special points
+    user_special = check_points(cards_user)
+    pc_special = check_points(cards_pc)
 
-    # Only user went over 21
-    elif user_sum > 21:
-        print("Gana PC")
+    # First: if one has higher special points, they win
+    if user_special == None:
+        user_special=0
+        
+    if pc_special == None:
+        pc_special=0
+        
+    if pc_special > user_special:
+        print("PC gana por puntos especiales mayores")
         return 1
-
-    # Only PC went over 21
-    elif pc_sum > 21:
-        print("Gana Usuario")
+    elif user_special > pc_special:
+        print("Usuario gana por puntos especiales mayores")
         return 2
-
-    # Both have exactly 21, use winner() for deeper check
-    if user_sum == 21 and pc_sum == 21:
-        win = winner(cards_user, cards_pc)
-        if win == 1:
-            return 1
-        elif win == 2:
-            return 2
-        else:
-            return 3
-
-    # One has exactly 21
-    elif user_sum == 21:
-        return 2
-    elif pc_sum == 21:
-        return 1
-
-    # Closest to 21 wins
-    elif user_sum > pc_sum:
-        return 2
-    elif pc_sum > user_sum:
-        return 1
-
-    # Tie by same value (doesn't usually happen, but included)
     else:
+        # Tie in special points, now compare sums normally
+        user_sum = sum_cards(cards_user)
+        pc_sum = sum_cards(cards_pc)
+
+        # Both busted
+        if user_sum > 21 and pc_sum > 21:
+            print("Ambos se pasaron")
+            return 0
+
+        # Only user busted
+        if user_sum > 21:
+            print("Gana PC porque usuario se pasó")
+            return 1
+
+        # Only PC busted
+        if pc_sum > 21:
+            print("Gana usuario porque PC se pasó")
+            return 2
+
+        # Both have 21, use winner function for tie-break
+        if user_sum == 21 and pc_sum == 21:
+            return winner(cards_user, cards_pc)
+
+        # One has 21
+        if user_sum == 21:
+            return 2
+        if pc_sum == 21:
+            return 1
+
+        # Closest to 21 wins
+        if user_sum > pc_sum:
+            return 2
+        if pc_sum > user_sum:
+            return 1
+
+        # Tie by same score
         return 3
+
     
     
 def winner(cards_user, cards_pc):

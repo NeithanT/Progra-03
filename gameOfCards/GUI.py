@@ -13,11 +13,11 @@ def start_black_jack():
     S: None: creates and renders the full Blackjack game screen and logic
     R: game_window must be a valid Tkinter Toplevel instance
     """
-    
     game_window = Toplevel()
     game_window.title("BlackJack")
-    game_window.geometry("1280x720")
+    game_window.geometry("1780x750")
     game_window.configure(bg = "#E9E9E9")
+    
     
     def deal_initial_cards():
         """
@@ -35,7 +35,7 @@ def start_black_jack():
             nonlocal pc_card_render_index
             nonlocal saved_images_pc
 
-            # Request a card for the PC and update deck
+            # Request card for the PC and update deck
             final_pc_hand = request_card(pc_deck)
             pc_deck = final_pc_hand
 
@@ -75,6 +75,17 @@ def start_black_jack():
             i += 1
 
         # After initial dealing, proceed to PC logic
+        text_id = main_canvas.create_text(
+        890, 30,
+        anchor="n",
+        text="Mientras los anarquistas estaban manifestándose,\nlos fascistas estaban planeando jugadas malevolas",
+        font=("Times New Roman", 20, "bold"),
+        fill="white",
+        justify="center"
+    )
+
+        game_window.after(6000, lambda: main_canvas.delete(text_id))
+
         request_cards_pc()
         
 
@@ -161,19 +172,34 @@ def start_black_jack():
 
             pc_card_render_index += 1
             container.update()
-            time.sleep(1)
-
-        # Final message once the computer finishes its turn
-        end_message = Label(
-            game_window,
-            text="Los Fascistas se plantan. El destino está marcado, ahora responde..",
+            time.sleep(3)
+       
+        end_message_id = main_canvas.create_text(
+            890, 30,
+            anchor="n",
+            text="Los Fascistas se plantan. El destino está marcado, y todos sus proyectos están en marcha..",
             font=("Times New Roman", 20, "bold"),
-            bg="#555555",
-            fg="white"
+            fill="white",
+            justify="center"
         )
-        end_message.place(relx=0.5, y=30, anchor="n")
-        game_window.after(3000, end_message.destroy)
 
+        
+        def show_start_message():
+            main_canvas.delete(end_message_id)
+            start_message_id = main_canvas.create_text(
+                890, 30,
+                anchor="n",
+                text="Es momento de que los anarquistas contra ataquen!",
+                font=("Times New Roman", 20, "bold"),
+                fill="white",
+                justify="center"
+            )
+            game_window.after(3000, lambda: main_canvas.delete(start_message_id))
+
+        
+        game_window.after(4000, show_start_message)
+
+        
     def stand_button(event):
         """
         Ends the user turn, reveals all PC cards, and shows the game result.
@@ -245,34 +271,93 @@ def start_black_jack():
         game_window.after(2000, remove_label)
 
         # Show the final result after 3 seconds
-        def show_result():
-            results = total_winner(user_deck, pc_deck)
+        def display_result():
+            result_code = total_winner(user_deck, pc_deck)
 
-            if results == 1:
-                message = "¡Victoria fascista! Su orden se impone y el caos comienza."
-            elif results == 2:
-                message = "¡Triunfo anarquista! La rebelión derriba el yugo del poder opresor."
-            elif results == 3:
+            if result_code == 1:
+                message = "¡Victoria fascista! imponen el caos con los siguientes proyectos:"
+            elif result_code == 2:
+                message = "¡Triunfo anarquista! Aurelio no ordenó, inspiró. Y eso bastó para lograr:"
+            elif result_code == 3:
                 message = "¡Empate! La lucha continúa en la historia."
             else:
                 message = "¡Ambos caen! Fascistas y Anarquistas caen, devorados por su propio conflicto."
 
-            result_label = Label(
-                game_window,
+            result_text_id = main_canvas.create_text(
+                890, 30,
+                anchor="n",
                 text=message,
                 font=("Times New Roman", 20, "bold"),
-                bg="#555555",
-                fg="white",
+                fill="white",
                 justify="center"
             )
-            result_label.place(relx=0.5, rely=0.1, anchor="n")
 
-           
-            game_window.after(5000, result_label.destroy)
+            def clear_result_and_display_projects():
+                main_canvas.delete(result_text_id)
+                if result_code == 1:
+                    display_projects(result_code)
+                if result_code == 2:
+                    display_projects(result_code)
 
-        game_window.after(3000, show_result)
-        
-    #Start of buttons 
+            game_window.after(5000, clear_result_and_display_projects)
+
+
+        def display_projects(result_code):
+            anarchist_projects = [
+                "Reuniones clandestinas en bosques y tabernas para planear la resistencia.",
+                "Esparcir pergaminos con mensajes de libertad y subversión por todo el reino.",
+                "Negarse en masa a pagar tributos y rentas a los señores fascistas.",
+                "Levantamientos campesinos armados con hoces y palos contra las tropas opresoras.",
+                "Esconder a perseguidos en aldeas y monasterios escondidos.",
+                "Organizar huelgas silenciosas en los talleres y mercados de la ciudad.",
+                "Destruir caminos y puentes para cortar las rutas de abastecimiento fascistas.",
+                "Quemar graneros y depósitos de armas enemigos en ataques nocturnos.",
+                "Crear refugios secretos en cuevas y bosques para los rebeldes heridos.",
+                "Celebrar festivales paganos y rituales antiguos para fortalecer el espíritu y la unión."
+            ]
+
+            fascist_projects = [
+                "Establecimiento de patrullas y guardias en aldeas y caminos.",
+                "Imposición de toques de queda estrictos para controlar la población.",
+                "Creación de cárceles y calabozos para castigar a los rebeldes.",
+                "Construcción de murallas y torres de vigilancia en territorios clave.",
+                "Quema pública de pergaminos y libros subversivos.",
+                "Organización de juicios sumarios para disuadir la disidencia.",
+                "Reclutamiento forzado de campesinos para ejércitos y trabajos forzados.",
+                "Control estricto del comercio y aprovisionamiento de alimentos.",
+                "Implementación de espías para infiltrarse en grupos rebeldes.",
+                "Celebración de ceremonias y festivales para reforzar la lealtad al poder."
+            ]
+
+            if result_code == 1:
+                selected_projects = fascist_projects
+            else:
+                selected_projects = anarchist_projects
+
+
+            total_cards = len(user_deck)
+
+            delay = 0
+            for i in range(total_cards):
+                project_text = selected_projects[i]
+
+                def show(i=i, project_text=project_text):
+                    text_id = main_canvas.create_text(
+                        890, 30,
+                        anchor="n",
+                        text=project_text,
+                        font=("Times New Roman", 20, "bold"),
+                        fill="white",
+                        justify="center"
+                    )
+                    game_window.after(5000, lambda: main_canvas.delete(text_id))
+
+                game_window.after(delay, show)
+                delay += 5000
+
+        game_window.after(3000, display_result)
+
+      #Start of buttons 
     def request_button(event):
         """
         Handles the request button click, and triggers the request_user_card
@@ -373,36 +458,89 @@ def start_black_jack():
     saved_images_pc = []
     saved_labels_pc = []
 
-
     # Create canvas
-    main_canvas = Canvas(game_window, bg="#777676", height=720, width=1280, bd=0, highlightthickness=0, relief="ridge")
+    main_canvas = Canvas(
+        game_window,
+        bg="#666666",
+        height=750,
+        width=1780,
+        bd=0,
+        highlightthickness=0,
+        relief="ridge",
+    )
     main_canvas.place(x=0, y=0)
 
-    main_canvas.create_rectangle(0.0, 0.0, 1280.0, 100.0, fill="#555555", outline="")
+    main_canvas.create_rectangle(0.0, 0.0, 1780.0, 100.0, fill="#575757", outline="")
 
+    text_id = main_canvas.create_text(
+        890,
+        30,
+        anchor="n",
+        text=(
+            "Después de una batalla histórica, el bando no se rindió.\n"
+            "Comenzaron otra batalla, pero esta es de estrategia."
+        ),
+        font=("Times New Roman", 20, "bold"),
+        fill="white",
+        justify="center",
+    )
 
-    # Frame for the player 
-    bg_img_a = PhotoImage(file="gameOfCards/btn_img/anarquistas.png")
-    container_1 = Frame(game_window, bg="#0B6623", width=540, height=380, bd=2, relief="raised")
-    container_1.place(x=50, y=160)
-    background_label_a = Label(container_1, image=bg_img_a)
-    background_label_a.place(x=0, y=0, relwidth=1, relheight=1)
-    container_1.image = bg_img_a
-    label_user_sum = Label(container_1, text="Contador: 0", fg="white", bg="#0B6623", font=("Times New Roman", 12, "bold"))
+    game_window.after(6000, lambda: main_canvas.delete(text_id))
+
+    # Frame for the Anarchist player
+    container_1 = Frame(
+        game_window,
+        bg="#0B6623",
+        width=750,
+        height=420,
+        bd=2,
+        relief="raised",
+    )
+    container_1.place(x=95, y=160)  
+    label_user_sum = Label(
+        container_1,
+        text="Contador: 0",
+        fg="white",
+        bg="#0B6623",
+        font=("Times New Roman", 12, "bold"),
+    )
     label_user_sum.place(x=5, y=5)
-    main_canvas.create_text(320.0, 130.0, anchor="center", text="Anarquistas", fill="#FFFFFF", font=("Times New Roman", 24, "bold"))
-    
-    # Frame for the computer
-    bg_img_f = PhotoImage(file="gameOfCards/btn_img/fascistas.png")
-    container_2 = Frame(game_window, bg="#0B6623", width=540, height=380, bd=2, relief="raised")
-    container_2.place(x=690, y=160)
-    background_label_f = Label(container_2, image=bg_img_f)
-    background_label_f.place(x=0, y=0, relwidth=1, relheight=1)
-    container_2.image = bg_img_f
-    label_pc_sum = Label(container_2, text="Contador: 0", fg="white", bg="#0B6623", font=("Times New Roman", 12, "bold"))
+    main_canvas.create_text(
+        470.0,
+        130.0,
+        anchor="center",
+        text="Anarquistas",
+        fill="#FFFFFF",
+        font=("Times New Roman", 24, "bold"),
+    )
+
+    # Frame for the Fascist player
+    container_2 = Frame(
+        game_window,
+        bg="#0B6623",
+        width=750,
+        height=420,
+        bd=2,
+        relief="raised",
+    )
+    container_2.place(x=935, y=160) 
+    label_pc_sum = Label(
+        container_2,
+        text="Contador: 0",
+        fg="white",
+        bg="#0B6623",
+        font=("Times New Roman", 12, "bold"),
+    )
     label_pc_sum.place(x=5, y=5)
-    main_canvas.create_text(960.0, 130.0, anchor="center", text="Fascistas", fill="#FFFFFF", font=("Times New Roman", 24, "bold"))
-    
+    main_canvas.create_text(
+        1310.0,
+        130.0,
+        anchor="center",
+        text="Fascistas",
+        fill="#FFFFFF",
+        font=("Times New Roman", 24, "bold"),
+    )
+
     # Load all button images
     menu_image = PhotoImage(file="gameOfCards/btn_img/menu.png")
     restart_image = PhotoImage(file="gameOfCards/btn_img/restart.png")
@@ -410,15 +548,14 @@ def start_black_jack():
     request_image = PhotoImage(file="gameOfCards/btn_img/request.png")
     play_image = PhotoImage(file="gameOfCards/btn_img/play.png")
 
-    # Display buttons as images
+    # Display buttons as images (aligned and centered)
     menu_btn = main_canvas.create_image(50.0, 50.0, image=menu_image, tags="menu_btn")
-    restart_btn = main_canvas.create_image(1024.0, 650.0, image=restart_image, tags="restart_btn")
-    stand_btn = main_canvas.create_image(512.0, 650.0, image=stand_image, tags="stand_btn")
-    request_btn = main_canvas.create_image(768.0, 650.0, image=request_image, tags="request_btn")
-    play_btn = main_canvas.create_image(256.0, 650.0, image=play_image, tags="play_btn")
-    
-    # should store images on the canvas to prevent garbage collection but oh well
-    
+
+    play_btn = main_canvas.create_image(515.0, 650.0, image=play_image, tags="play_btn")
+    request_btn = main_canvas.create_image(765.0, 650.0, image=request_image, tags="request_btn")
+    stand_btn = main_canvas.create_image(1015.0, 650.0, image=stand_image, tags="stand_btn")
+    restart_btn = main_canvas.create_image(1265.0, 650.0, image=restart_image, tags="restart_btn")
+
     # GUI elements to be passed
     # They can be treated differented but oh well
     gui_elements = {
@@ -430,7 +567,7 @@ def start_black_jack():
         "image_path": "gameOfCards/cards_img/",
         "btn_path": "gameOfCard/btn_img/"
     }
-    print(gui_elements)
+
     # Binding events
     
     main_canvas.tag_bind(menu_btn, "<Button-1>", menu_button)

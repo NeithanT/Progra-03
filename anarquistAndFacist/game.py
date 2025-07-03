@@ -198,10 +198,14 @@ def is_valid_move(game_state, from_pos, to_pos, possible_moves):
             return False # invalid
     
     return False # Cause why not
+def generate_facist_move(game_state, possible_moves):
+    """
+    Generate a random valid move for the fascist piece
+    
+    Returns:
+        bool: True if a move can be made, False otherwise
+    """
 
-def generate_facist_move(game_state,possible_moves):
-    """
-    """
     # Find the fascist position
     fascist_pos_coord = None
     for y, row in enumerate(game_state):
@@ -209,47 +213,45 @@ def generate_facist_move(game_state,possible_moves):
             if piece == 3:
                 fascist_pos_coord = (y, x)
                 break
-  
-  
+            
+        if fascist_pos_coord:  
+            
+            break
     
     if not fascist_pos_coord:
-        # THis should not happend but oh well
+        # This should not happen but oh well
         return False
     
+    # Convert board coordinates to position index
     fascist_board_pos = board_index_to_position(fascist_pos_coord[0], fascist_pos_coord[1])
     
-    # Get all possible moves
-    fascist_possible_moves = possible_moves[fascist_board_pos]
-
-    # Collect all valid moves
-    valid_moves = []
-
-    for move_pos in fascist_possible_moves:
-
-        move_coords = position_to_board_index(move_pos)
-
-        if move_coords:
-            
-            
-            if game_state[move_coords[0]][move_coords[1]] == 1:
-                valid_moves += [move_coords]
+    if fascist_board_pos is None:
+        return False
     
+    # Get all possible moves for the fascist
+    fascist_possible_moves = possible_moves.get(fascist_board_pos, [])
+
+    # Collect all valid moves (empty positions)
+    valid_moves = []
+    for move_pos in fascist_possible_moves:
+        move_coords = position_to_board_index(move_pos)
+        if move_coords:
+            # Check if the position is empty (red circle)
+            if game_state[move_coords[0]][move_coords[1]] == 1:
+                valid_moves.append((move_pos, move_coords))
     
     if not valid_moves:
         return False
     
-    option = random.randint(0,len(valid_moves)-1)
     # Randomly select one of the valid moves
+    option = random.randint(0, len(valid_moves) - 1)
     selected_move_pos, selected_move_coords = valid_moves[option]
     
-    fascist_pos_coord = position_to_board_index(fascist_pos_coord)
-    if fascist_pos_coord:
-        # Make the move
-        game_state[fascist_pos_coord[0]][fascist_pos_coord[1]], game_state[selected_move_coords[0]][selected_move_coords[1]] = \
-            game_state[selected_move_coords[0]][selected_move_coords[1]], game_state[fascist_pos_coord[0]][fascist_pos_coord[1]]
-        
+    # Make the move - fascist_pos_coord is already board coordinates
+    game_state[fascist_pos_coord[0]][fascist_pos_coord[1]], game_state[selected_move_coords[0]][selected_move_coords[1]] = \
+        game_state[selected_move_coords[0]][selected_move_coords[1]], game_state[fascist_pos_coord[0]][fascist_pos_coord[1]]
+    
     return True
-
 
 def move_piece(game_canvas, game_state, from_pos, to_pos, circles_coordinates, anarquist_img, facist_img, possible_moves):
     """
@@ -427,7 +429,7 @@ def start_anarquist_vs_facist():
         clicked_piece = game_data["game_state"][y][x]
         
         if game_data["selected_position"] == -1:
-            
+
             # Select a piece if none are selected
             if clicked_piece == 2:  
                 game_data["selected_position"] = clicked_position

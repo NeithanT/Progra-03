@@ -82,4 +82,3 @@ def computer_round(current_pc_hand):
     print("Mano final del PC:", pc_hand)
     print("********FIN DE EL TURNO DE PC**************************")
     return pc_hand
-
